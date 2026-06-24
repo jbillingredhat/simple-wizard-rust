@@ -5,7 +5,7 @@
 
 use iced::{
     widget::{button, column, container, row, text, text_input, Row},
-    Element, Length, alignment, Alignment,
+    Element, Length, alignment, Alignment, Color,
 };
 
 use super::super::types::{Message, PageType, WizardWindow, CurrentPage};
@@ -191,8 +191,25 @@ impl WizardWindow {
     }
 
     fn build_warning_page<'a>(&'a self, page: &'a CurrentPage) -> Element<'a, Message> {
+        let warning_icon = container(
+            text("!").size(48)
+        )
+        .padding(16)
+        .style(|_theme| {
+            container::Style {
+                background: Some(Color::from_rgb(0.95, 0.75, 0.0).into()), // Yellow/amber
+                text_color: Some(Color::BLACK),
+                border: iced::Border {
+                    color: Color::from_rgb(0.8, 0.6, 0.0),
+                    width: 2.0,
+                    radius: 8.0.into(),
+                },
+                ..Default::default()
+            }
+        });
+
         column![
-            text("⚠️").size(48),
+            warning_icon,
             text(&page.title).size(20),
             text(&page.message).size(14),
             button(text("OK")).on_press(Message::NextClicked),
@@ -204,8 +221,25 @@ impl WizardWindow {
     }
 
     fn build_error_page<'a>(&'a self, page: &'a CurrentPage) -> Element<'a, Message> {
+        let error_icon = container(
+            text("X").size(48)
+        )
+        .padding(16)
+        .style(|_theme| {
+            container::Style {
+                background: Some(Color::from_rgb(0.9, 0.2, 0.2).into()), // Red
+                text_color: Some(Color::WHITE),
+                border: iced::Border {
+                    color: Color::from_rgb(0.7, 0.1, 0.1),
+                    width: 2.0,
+                    radius: 8.0.into(),
+                },
+                ..Default::default()
+            }
+        });
+
         column![
-            text("❌").size(48),
+            error_icon,
             text(&page.title).size(20),
             text(&page.message).size(14),
             button(text("OK")).on_press(Message::NextClicked),
@@ -218,7 +252,7 @@ impl WizardWindow {
 
     fn build_complete_page<'a>(&'a self, page: &'a CurrentPage) -> Element<'a, Message> {
         column![
-            text("✓").size(48),
+            text("✓").size(72),  // Try checkmark - fallback to "OK" if needed
             text(&page.title).size(20),
             text(&page.message).size(14),
             button(text("Finish")).on_press(Message::FinishClicked),
