@@ -86,6 +86,18 @@ impl WizardWindow {
             Message::FilePathChanged(value) => {
                 self.file_path = value;
             }
+            Message::BrowseFile => {
+                // Open native file picker
+                if let Some(file) = rfd::FileDialog::new().pick_file() {
+                    self.file_path = file.to_string_lossy().to_string();
+                }
+            }
+            Message::BrowseDirectory => {
+                // Open native directory picker
+                if let Some(dir) = rfd::FileDialog::new().pick_folder() {
+                    self.file_path = dir.to_string_lossy().to_string();
+                }
+            }
             Message::NextClicked => {
                 if let Some(page) = &self.current_page {
                     match page.page_type {
@@ -132,7 +144,6 @@ impl WizardWindow {
             Message::Quit => {
                 std::process::exit(0);
             }
-            _ => {}
         }
     }
 

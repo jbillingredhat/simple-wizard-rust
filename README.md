@@ -205,11 +205,11 @@ This port uses the [iced](https://iced.rs/) GUI framework instead of Qt or GTK:
 - ✅ Easy distribution - single binary with all dependencies
 - ✅ Hardware-accelerated rendering via wgpu
 - ✅ Clean, declarative API
+- ✅ Native file dialogs via `rfd` crate
 
 **Trade-offs:**
 - ⚠️ Larger binary size (~21MB vs ~5MB for Qt/GTK versions)
 - ⚠️ Different look & feel from system-native widgets
-- ⚠️ File dialogs need to be implemented (currently using text input)
 
 ## Advantages Over Python/GTK4 Version
 
