@@ -94,14 +94,26 @@ impl WizardWindow {
                 self.file_path = value;
             }
             Message::BrowseFile => {
-                // Open native file picker
-                if let Some(file) = rfd::FileDialog::new().pick_file() {
+                // Use async file dialog to prevent blocking the UI
+                return Task::perform(
+                    async { rfd::AsyncFileDialog::new().pick_file().await },
+                    |file| Message::FileSelected(file.map(|f| f.path().to_path_buf()))
+                );
+            }
+            Message::BrowseDirectory => {
+                // Use async file dialog to prevent blocking the UI
+                return Task::perform(
+                    async { rfd::AsyncFileDialog::new().pick_folder().await },
+                    |folder| Message::DirectorySelected(folder.map(|f| f.path().to_path_buf()))
+                );
+            }
+            Message::FileSelected(path) => {
+                if let Some(file) = path {
                     self.file_path = file.to_string_lossy().to_string();
                 }
             }
-            Message::BrowseDirectory => {
-                // Open native directory picker
-                if let Some(dir) = rfd::FileDialog::new().pick_folder() {
+            Message::DirectorySelected(path) => {
+                if let Some(dir) = path {
                     self.file_path = dir.to_string_lossy().to_string();
                 }
             }

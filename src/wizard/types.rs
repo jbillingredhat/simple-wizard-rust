@@ -31,6 +31,8 @@ pub enum Message {
     // File selection
     BrowseFile,
     BrowseDirectory,
+    FileSelected(Option<std::path::PathBuf>),
+    DirectorySelected(Option<std::path::PathBuf>),
 
     // Progress updates
     UpdateProgress(i32, i32, String),
