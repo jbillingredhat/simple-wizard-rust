@@ -46,7 +46,10 @@ impl WizardWindow {
 ///
 /// Sets up the socket server for external communication and launches the
 /// iced GUI application.
-pub fn run_wizard() -> iced::Result {
+///
+/// # Arguments
+/// * `socket_path` - Optional custom socket path (defaults to /tmp/simple-wizard.sock)
+pub fn run_wizard(socket_path: Option<String>) -> iced::Result {
     // Create channel for socket messages
     let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
     let msg_sender = Arc::new(Mutex::new(Some(tx)));
@@ -58,9 +61,10 @@ pub fn run_wizard() -> iced::Result {
     // Spawn socket server in tokio runtime
     let server_msg_sender = msg_sender.clone();
     let server_response_sender = response_sender.clone();
+    let socket_path_clone = socket_path.clone();
     std::thread::spawn(move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(run_socket_server(server_msg_sender, server_response_sender));
+        rt.block_on(run_socket_server(server_msg_sender, server_response_sender, socket_path_clone));
     });
 
     // Run iced with subscription that listens to the channel

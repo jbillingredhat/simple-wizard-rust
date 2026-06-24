@@ -14,28 +14,32 @@ use super::types::Message;
 
 /// Runs the socket server that listens for external commands
 ///
-/// The server creates a Unix socket at /tmp/simple-wizard.sock and accepts
-/// incoming connections. Each connection is handled in a separate task.
+/// The server creates a Unix socket and accepts incoming connections.
+/// Each connection is handled in a separate task.
+///
+/// # Arguments
+/// * `socket_path` - Optional custom socket path (defaults to /tmp/simple-wizard.sock)
 pub async fn run_socket_server(
     msg_sender: Arc<Mutex<Option<tokio::sync::mpsc::UnboundedSender<Message>>>>,
-    response_sender: Arc<Mutex<Option<oneshot::Sender<Value>>>>
+    response_sender: Arc<Mutex<Option<oneshot::Sender<Value>>>>,
+    socket_path: Option<String>
 ) {
-    let socket_path = "/tmp/simple-wizard.sock";
+    let socket_path = socket_path.unwrap_or_else(|| "/tmp/simple-wizard.sock".to_string());
 
     // Check if socket exists and if there's an active listener
-    if std::path::Path::new(socket_path).exists() {
+    if std::path::Path::new(&socket_path).exists() {
         // Try to connect to see if there's an active server
-        if UnixStream::connect(socket_path).await.is_ok() {
+        if UnixStream::connect(&socket_path).await.is_ok() {
             eprintln!("Error: Another wizard instance is already running on {}", socket_path);
             eprintln!("Please close the existing wizard or use a different socket path.");
             std::process::exit(1);
         } else {
             // Socket file exists but no server is listening - it's stale, remove it
-            let _ = std::fs::remove_file(socket_path);
+            let _ = std::fs::remove_file(&socket_path);
         }
     }
 
-    let listener = match UnixListener::bind(socket_path) {
+    let listener = match UnixListener::bind(&socket_path) {
         Ok(l) => l,
         Err(e) => {
             eprintln!("Failed to bind socket: {}", e);

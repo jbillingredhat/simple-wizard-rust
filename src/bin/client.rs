@@ -4,15 +4,28 @@ use std::env;
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() < 2 {
-        eprintln!("Usage: simple-wizard-client <command> [args...]");
-        eprintln!("Commands:");
+    // Parse socket path if provided
+    let (socket_path, command_start_idx) = if args.len() > 2 && args[1] == "--socket" {
+        if args.len() < 4 {
+            eprintln!("Error: --socket requires a path argument and a command");
+            std::process::exit(1);
+        }
+        (args[2].clone(), 3)
+    } else {
+        ("/tmp/simple-wizard.sock".to_string(), 1)
+    };
+
+    if command_start_idx >= args.len() {
+        eprintln!("Usage: simple-wizard-client [--socket PATH] <command> [args...]");
+        eprintln!("\nGlobal Options:");
+        eprintln!("  --socket PATH    Unix socket path (default: /tmp/simple-wizard.sock)");
+        eprintln!("\nCommands:");
         eprintln!("  set-info --title <title> --description <desc> --help <help>");
         eprintln!("  set-progress --current <n> --total <n> --status <status>");
         eprintln!("  welcome --title <title> --message <message>");
         eprintln!("  file --title <title> --message <message> --default <path>");
         eprintln!("  directory --title <title> --message <message> --default <path>");
-        eprintln!("  password --title <title> --message <message> [--no-confirm]");
+        eprintln!("  password --title <title> --message <message> [--no-confirm] [--min-length <n>]");
         eprintln!("  question --title <title> --message <message> --buttons <b1> <b2> ...");
         eprintln!("  text --title <title> --message <message> [--default <text>] [--placeholder <text>] [--validate <preset>]");
         eprintln!("  warning --title <title> --message <message>");
@@ -24,8 +37,9 @@ fn main() {
         std::process::exit(1);
     }
 
-    let client = WizardClient::new("/tmp/simple-wizard.sock");
-    let command = &args[1];
+    let client = WizardClient::new(&socket_path);
+    let command = &args[command_start_idx];
+    let args = &args[command_start_idx..]; // Use adjusted args for command parsing
 
     let result = match command.as_str() {
         "set-info" => {
