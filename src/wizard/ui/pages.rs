@@ -251,8 +251,25 @@ impl WizardWindow {
     }
 
     fn build_complete_page<'a>(&'a self, page: &'a CurrentPage) -> Element<'a, Message> {
+        let complete_icon = container(
+            text("OK").size(32)  // Simple ASCII text
+        )
+        .padding(16)
+        .style(|_theme| {
+            container::Style {
+                background: Some(Color::from_rgb(0.2, 0.8, 0.2).into()), // Green
+                text_color: Some(Color::WHITE),
+                border: iced::Border {
+                    color: Color::from_rgb(0.1, 0.6, 0.1),
+                    width: 2.0,
+                    radius: 8.0.into(),
+                },
+                ..Default::default()
+            }
+        });
+
         column![
-            text("✓").size(72),  // Try checkmark - fallback to "OK" if needed
+            complete_icon,
             text(&page.title).size(20),
             text(&page.message).size(14),
             button(text("Finish")).on_press(Message::FinishClicked),
