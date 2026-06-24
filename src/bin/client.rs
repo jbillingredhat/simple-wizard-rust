@@ -61,7 +61,9 @@ fn main() {
             let title = get_arg(&args, "--title").unwrap_or("Enter Password");
             let message = get_arg(&args, "--message").unwrap_or("");
             let confirm = !args.contains(&"--no-confirm".to_string());
-            client.show_password(title, message, confirm)
+            let min_length = get_arg(&args, "--min-length")
+                .and_then(|s| s.parse::<usize>().ok());
+            client.show_password(title, message, confirm, min_length)
         }
         "question" => {
             let title = get_arg(&args, "--title").unwrap_or("Question");

@@ -137,11 +137,15 @@ impl WizardClient {
         })
     }
 
-    pub fn show_password(&self, title: &str, message: &str, confirm: bool) -> Result<Response, String> {
+    pub fn show_password(&self, title: &str, message: &str, confirm: bool, min_length: Option<usize>) -> Result<Response, String> {
         let mut page_params = HashMap::new();
         page_params.insert("title".to_string(), serde_json::Value::String(title.to_string()));
         page_params.insert("message".to_string(), serde_json::Value::String(message.to_string()));
         page_params.insert("confirm".to_string(), serde_json::Value::Bool(confirm));
+
+        if let Some(len) = min_length {
+            page_params.insert("min_length".to_string(), serde_json::Value::Number(len.into()));
+        }
 
         let mut params = HashMap::new();
         params.insert("page_type".to_string(), serde_json::Value::String("password".to_string()));

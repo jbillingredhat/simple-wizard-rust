@@ -106,8 +106,9 @@ echo "Step 4: Configuration Password"
 call_wizard set-progress --current 4 --status "Security setup"
 response=$(call_wizard password \
     --title "Admin Password" \
-    --message "Create an administrator password for Example App." \
-    --confirm)
+    --message "Create an administrator password for Example App (minimum 8 characters)." \
+    --confirm \
+    --min-length 8)
 
 echo "  ✓ Admin password set"
 

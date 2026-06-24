@@ -108,8 +108,19 @@ impl WizardWindow {
             Message::NextClicked => {
                 if let Some(page) = &self.current_page {
                     match page.page_type {
-                        PageType::Password if page.confirm => {
-                            if self.password_input != self.confirm_password_input {
+                        PageType::Password => {
+                            // Check minimum length
+                            if self.password_input.len() < page.min_length {
+                                let msg = if page.min_length == 1 {
+                                    "Password cannot be empty!".to_string()
+                                } else {
+                                    format!("Password must be at least {} characters!", page.min_length)
+                                };
+                                self.validation_error = Some(msg);
+                                return Task::none();
+                            }
+                            // Check confirmation match if required
+                            if page.confirm && self.password_input != self.confirm_password_input {
                                 self.validation_error = Some("Passwords do not match!".to_string());
                                 return Task::none();
                             }
@@ -249,6 +260,7 @@ impl WizardWindow {
         let validate = params["validate"].as_str().map(|s| s.to_string());
         let validation_message = params["validation_message"].as_str().map(|s| s.to_string());
         let confirm = params["confirm"].as_bool().unwrap_or(true);
+        let min_length = params["min_length"].as_u64().unwrap_or(1) as usize;
 
         self.current_page = Some(CurrentPage {
             page_type,
@@ -260,6 +272,7 @@ impl WizardWindow {
             validate,
             validation_message,
             confirm,
+            min_length,
         });
 
         // Reset input state

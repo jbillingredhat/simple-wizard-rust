@@ -114,4 +114,5 @@ pub(crate) struct CurrentPage {
     pub(crate) validate: Option<String>,
     pub(crate) validation_message: Option<String>,
     pub(crate) confirm: bool,
+    pub(crate) min_length: usize,
 }
