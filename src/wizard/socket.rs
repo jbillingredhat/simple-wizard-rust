@@ -47,6 +47,17 @@ pub async fn run_socket_server(
         }
     };
 
+    // Set restrictive permissions (owner read/write only - 0o600)
+    // This prevents other users from connecting to or tampering with the socket
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if let Err(e) = std::fs::set_permissions(&socket_path, std::fs::Permissions::from_mode(0o600)) {
+            eprintln!("Warning: Failed to set socket permissions: {}", e);
+            // Continue anyway - socket is still functional
+        }
+    }
+
     println!("Socket server listening on {}", socket_path);
 
     loop {
