@@ -4,6 +4,7 @@
 //! that appear in the wizard window.
 
 use iced::widget::{column, text, progress_bar, scrollable, Column};
+use iced::Length;
 
 use super::super::types::{Message, WizardWindow};
 
@@ -26,18 +27,28 @@ impl WizardWindow {
         };
 
         let mut col = column![
-            progress_bar(0.0..=1.0, progress),
+            progress_bar(0.0..=1.0, progress)
+                .width(Length::Fill),  // Progress bar uses full width
             text(&self.status_text).size(12),
         ]
         .spacing(6)
-        .padding(12);
+        .padding(12)
+        .width(Length::Fill);  // Panel uses full width
 
         if !self.log_messages.is_empty() {
             let log_text = self.log_messages.join("\n");
-            col = col.push(
-                scrollable(text(log_text).size(10))
-                    .height(150)
-            );
+
+            // Create scrollable log panel with ID for auto-scroll
+            let log_scroll = scrollable(
+                text(log_text)
+                    .size(10)
+                    .width(Length::Fill)
+            )
+            .id(self.log_scroll_id.clone())
+            .width(Length::Fill)
+            .height(150);
+
+            col = col.push(log_scroll);
         }
 
         col

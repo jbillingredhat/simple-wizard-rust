@@ -20,11 +20,14 @@ impl WizardWindow {
         let main_content = row![
             container(info_panel)
                 .width(250)
+                .height(Length::Fill)
                 .padding(12),
             container(content_area)
                 .width(Length::Fill)
+                .height(Length::Fill)
                 .padding(12),
-        ];
+        ]
+        .height(Length::Fill);  // Make row expand to fill height
 
         let layout = column![
             main_content,
@@ -66,8 +69,7 @@ pub fn run_wizard() -> iced::Result {
     iced::application(
         WizardWindow::title,
         |state: &mut WizardWindow, message| {
-            state.update(message);
-            iced::Task::none()
+            state.update(message)
         },
         WizardWindow::view
     )

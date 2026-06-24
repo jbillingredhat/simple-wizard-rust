@@ -6,7 +6,8 @@
 //! - Socket command processing
 //! - Response building and sending
 
-use iced::{Subscription, Theme};
+use iced::{Subscription, Theme, Task};
+use iced::widget::scrollable::{self, AbsoluteOffset};
 use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::{Mutex, oneshot};
@@ -24,6 +25,7 @@ impl WizardWindow {
             current_step: 0,
             status_text: "Ready".to_string(),
             log_messages: Vec::new(),
+            log_scroll_id: iced::widget::scrollable::Id::unique(),
             current_page: None,
             text_input: String::new(),
             password_input: String::new(),
@@ -38,7 +40,7 @@ impl WizardWindow {
         "Installation Wizard".to_string()
     }
 
-    pub fn update(&mut self, message: Message) {
+    pub fn update(&mut self, message: Message) -> Task<Message> {
         match message {
             Message::UpdateInfo(title, description, help) => {
                 if !title.is_empty() {
@@ -64,6 +66,11 @@ impl WizardWindow {
             }
             Message::AppendLog(msg) => {
                 self.log_messages.push(msg);
+                // Scroll to bottom when new log added
+                return scrollable::scroll_to(
+                    self.log_scroll_id.clone(),
+                    AbsoluteOffset { x: 0.0, y: f32::MAX }
+                );
             }
             Message::ClearLog => {
                 self.log_messages.clear();
@@ -104,14 +111,14 @@ impl WizardWindow {
                         PageType::Password if page.confirm => {
                             if self.password_input != self.confirm_password_input {
                                 self.validation_error = Some("Passwords do not match!".to_string());
-                                return;
+                                return Task::none();
                             }
                         }
                         PageType::Text => {
                             if let Some(validate) = &page.validate {
                                 if let Err(err) = self.validate_text(&self.text_input, validate, &page.validation_message) {
                                     self.validation_error = Some(err);
-                                    return;
+                                    return Task::none();
                                 }
                             }
                         }
@@ -139,12 +146,14 @@ impl WizardWindow {
                 self.send_response(response);
             }
             Message::SocketCommand(cmd) => {
-                self.process_socket_command(cmd);
+                return self.process_socket_command(cmd);
             }
             Message::Quit => {
                 std::process::exit(0);
             }
         }
+
+        Task::none()
     }
 
     pub fn subscription(&self) -> Subscription<Message> {
@@ -156,7 +165,7 @@ impl WizardWindow {
         Theme::default()
     }
 
-    pub(crate) fn process_socket_command(&mut self, cmd: Value) {
+    pub(crate) fn process_socket_command(&mut self, cmd: Value) -> Task<Message> {
         let command = cmd.get("command").and_then(|c| c.as_str()).unwrap_or("");
 
         match command {
@@ -198,7 +207,7 @@ impl WizardWindow {
                         "warning" => PageType::Warning,
                         "error" => PageType::Error,
                         "complete" => PageType::Complete,
-                        _ => return,
+                        _ => return Task::none(),
                     };
 
                     let params = cmd.get("params").cloned().unwrap_or(Value::Object(serde_json::Map::new()));
@@ -208,6 +217,11 @@ impl WizardWindow {
             "append_log" => {
                 if let Some(message) = cmd.get("message").and_then(|m| m.as_str()) {
                     self.log_messages.push(message.to_string());
+                    // Scroll to bottom when log added via socket
+                    return scrollable::scroll_to(
+                        self.log_scroll_id.clone(),
+                        AbsoluteOffset { x: 0.0, y: f32::MAX }
+                    );
                 }
             }
             "clear_log" => {
@@ -220,6 +234,8 @@ impl WizardWindow {
                 eprintln!("Unknown command: {}", command);
             }
         }
+
+        Task::none()
     }
 
     pub(crate) fn show_page(&mut self, page_type: PageType, params: Value) {

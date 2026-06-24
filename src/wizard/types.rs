@@ -83,6 +83,7 @@ pub struct WizardWindow {
 
     // Log
     pub(crate) log_messages: Vec<String>,
+    pub(crate) log_scroll_id: iced::widget::scrollable::Id,
 
     // Current page
     pub(crate) current_page: Option<CurrentPage>,
