@@ -271,16 +271,15 @@ cargo build --release  # GUI will work, socket server needs adaptation
 - [Quick Start Guide](docs/QUICKSTART.md) - Get up and running in minutes
 
 **Coming from the Python version?**
-- [API Compatibility](docs/API_COMPATIBILITY.md) - 100% compatible, see the proof
-- [API Verification](docs/API_VERIFICATION.md) - Verified against Python architecture
+- [Changelog](docs/CHANGELOG.md) - API compatibility table and project history
+- [Implementation Guide](docs/IMPLEMENTATION.md) - Architecture and API reference
 
-**Want to know what's working?**
-- [Final Status](docs/FINAL_STATUS.md) - Complete status, testing guide, and performance metrics
-- [Completion Checklist](docs/COMPLETION_STATUS.md) - Detailed feature checklist
+**Want to contribute?**
+- [Contributing Guide](CONTRIBUTING.md) - How to add page types and validation presets
 
 **Interested in implementation?**
-- [Response Mechanism](docs/RESPONSE_MECHANISM.md) - How user input waiting works
-- [Architecture Notes](docs/NOTES.md) - Code structure and design decisions
+- [Implementation Guide](docs/IMPLEMENTATION.md) - Architecture, components, and technical details
+- [Development Notes](docs/NOTES.md) - Miscellaneous development observations
 
 See the [full documentation index](docs/INDEX.md) for all available documentation.
 
