@@ -317,4 +317,4 @@ Apache 2.0 License - See LICENSE file for details.
 
 ## Original Version
 
-This is a port of the Python/GTK4 version available at: `/home/jbilling/code/simple-wizard/`
+This is a port of the Python/GTK4 version available at: [jbillingredhat's simple-wizard repository on Github](https://github.com/jbillingredhat/simple-wizard)
