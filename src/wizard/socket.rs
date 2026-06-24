@@ -22,8 +22,18 @@ pub async fn run_socket_server(
 ) {
     let socket_path = "/tmp/simple-wizard.sock";
 
-    // Remove existing socket if it exists
-    let _ = std::fs::remove_file(socket_path);
+    // Check if socket exists and if there's an active listener
+    if std::path::Path::new(socket_path).exists() {
+        // Try to connect to see if there's an active server
+        if UnixStream::connect(socket_path).await.is_ok() {
+            eprintln!("Error: Another wizard instance is already running on {}", socket_path);
+            eprintln!("Please close the existing wizard or use a different socket path.");
+            std::process::exit(1);
+        } else {
+            // Socket file exists but no server is listening - it's stale, remove it
+            let _ = std::fs::remove_file(socket_path);
+        }
+    }
 
     let listener = match UnixListener::bind(socket_path) {
         Ok(l) => l,
