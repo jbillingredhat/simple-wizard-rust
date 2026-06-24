@@ -1,3 +1,5 @@
+![Simple Wizard Icon](simple_wizard_icon.svg)
+
 # Simple Wizard - Rust/iced Port
 
 A modern, pure Rust installation wizard for Linux that can be controlled via scripts. This is a Rust port of the original Python/GTK4 version, using the iced GUI framework.
