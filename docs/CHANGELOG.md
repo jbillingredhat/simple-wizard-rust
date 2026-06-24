@@ -91,7 +91,11 @@ Major dependencies:
 
 Potential improvements:
 - [ ] Configurable socket path via CLI argument
-- [ ] Theming support (dark mode, custom colors)
+- [ ] Theming support
+  - CLI flag for built-in themes (dark, light, nord, dracula, etc.)
+  - Socket command to change theme dynamically
+  - Custom palette from config file
+  - Note: Cannot match GTK4 CSS flexibility (iced uses programmatic themes)
 - [ ] i18n/l10n for multiple languages
 - [ ] Additional validation presets
 - [ ] File dialog filters (file type restrictions)
