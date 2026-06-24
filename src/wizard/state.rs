@@ -26,6 +26,7 @@ impl WizardWindow {
             status_text: "Ready".to_string(),
             log_messages: Vec::new(),
             log_scroll_id: iced::widget::scrollable::Id::unique(),
+            log_expanded: false,
             current_page: None,
             text_input: String::new(),
             password_input: String::new(),
@@ -74,6 +75,9 @@ impl WizardWindow {
             }
             Message::ClearLog => {
                 self.log_messages.clear();
+            }
+            Message::ToggleLog => {
+                self.log_expanded = !self.log_expanded;
             }
             Message::ShowPage(page_type, params) => {
                 self.show_page(page_type, params);

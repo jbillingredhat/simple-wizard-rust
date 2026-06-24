@@ -39,6 +39,7 @@ pub enum Message {
     UpdateInfo(String, String, String),
     AppendLog(String),
     ClearLog,
+    ToggleLog,
 
     // Page transitions
     ShowPage(PageType, serde_json::Value),
@@ -86,6 +87,7 @@ pub struct WizardWindow {
     // Log
     pub(crate) log_messages: Vec<String>,
     pub(crate) log_scroll_id: iced::widget::scrollable::Id,
+    pub(crate) log_expanded: bool,
 
     // Current page
     pub(crate) current_page: Option<CurrentPage>,

@@ -3,7 +3,7 @@
 //! This module contains the implementation for the info and progress panels
 //! that appear in the wizard window.
 
-use iced::widget::{column, text, progress_bar, scrollable, Column};
+use iced::widget::{column, text, progress_bar, scrollable, button, row, Column};
 use iced::Length;
 
 use super::super::types::{Message, WizardWindow};
@@ -35,20 +35,38 @@ impl WizardWindow {
         .padding(12)
         .width(Length::Fill);  // Panel uses full width
 
+        // Show log toggle button only if there are log messages
         if !self.log_messages.is_empty() {
-            let log_text = self.log_messages.join("\n");
-
-            // Create scrollable log panel with ID for auto-scroll
-            let log_scroll = scrollable(
-                text(log_text)
-                    .size(10)
-                    .width(Length::Fill)
+            let toggle_icon = if self.log_expanded { "▼" } else { "▶" };
+            let log_count = self.log_messages.len();
+            let toggle_button = button(
+                row![
+                    text(toggle_icon).size(12),
+                    text(format!(" Installation Log ({} messages)", log_count)).size(12),
+                ]
+                .spacing(4)
             )
-            .id(self.log_scroll_id.clone())
-            .width(Length::Fill)
-            .height(150);
+            .on_press(Message::ToggleLog)
+            .padding(4);
 
-            col = col.push(log_scroll);
+            col = col.push(toggle_button);
+
+            // Show log panel only if expanded
+            if self.log_expanded {
+                let log_text = self.log_messages.join("\n");
+
+                // Create scrollable log panel with ID for auto-scroll
+                let log_scroll = scrollable(
+                    text(log_text)
+                        .size(10)
+                        .width(Length::Fill)
+                )
+                .id(self.log_scroll_id.clone())
+                .width(Length::Fill)
+                .height(150);
+
+                col = col.push(log_scroll);
+            }
         }
 
         col
