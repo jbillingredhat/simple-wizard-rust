@@ -119,17 +119,26 @@ You can control the wizard using the `simple-wizard-client` command:
 ./target/release/simple-wizard-client quit
 ```
 
-### Using the Rust Client Library
+### Example Installer
 
-See `examples/example_install.rs` for a complete example of using the Rust client library:
+See `examples/example_install.sh` for a complete example showing all wizard features:
 
 ```bash
 # Terminal 1: Start the wizard
 ./target/release/simple-wizard
 
 # Terminal 2: Run the example
-cargo run --example example_install
+./examples/example_install.sh
 ```
+
+This demonstrates:
+- All 9 page types (welcome, directory, text, password, question, warning, error, complete)
+- Input validation (email)
+- Progress tracking
+- Log messages
+- Response parsing
+
+**For Rust library usage**, see `examples/example_install_lib.rs` and `examples/README.md`
 
 ### Testing
 

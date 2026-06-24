@@ -19,6 +19,12 @@ path = "src/bin/wizard.rs"
 name = "simple-wizard-client"
 path = "src/bin/client.rs"
 
+# Example of using the Rust client library (advanced usage)
+# For typical usage, see examples/example_install.sh instead
+[[example]]
+name = "example_install_lib"
+path = "examples/example_install_lib.rs"
+
 [lib]
 name = "simple_wizard"
 path = "src/lib.rs"
